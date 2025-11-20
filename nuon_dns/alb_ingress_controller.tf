@@ -24,6 +24,8 @@ module "alb_controller_irsa" {
   tags = var.tags
 }
 
+# docs
+# issue: https://github.com/kubernetes-sigs/aws-load-balancer-controller/issues/4307
 resource "helm_release" "alb_ingress_controller" {
   namespace        = local.alb_ingress_controller.namespace
   create_namespace = true
@@ -34,6 +36,16 @@ resource "helm_release" "alb_ingress_controller" {
   version    = "1.12.0"
 
   set = [
+    {
+      name   = "region"
+      region = var.region
+
+    },
+    {
+      name   = "vpcId"
+      region = var.vpc_id
+
+    },
     {
       name  = "enableCertManager"
       value = "apply"
