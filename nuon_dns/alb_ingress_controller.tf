@@ -24,7 +24,7 @@ module "alb_controller_irsa" {
   tags = var.tags
 }
 
-# docs
+# values: https://github.com/kubernetes-sigs/aws-load-balancer-controller/blob/v2.15.0/helm/aws-load-balancer-controller/values.yaml
 # issue: https://github.com/kubernetes-sigs/aws-load-balancer-controller/issues/4307
 resource "helm_release" "alb_ingress_controller" {
   namespace        = local.alb_ingress_controller.namespace
@@ -33,17 +33,17 @@ resource "helm_release" "alb_ingress_controller" {
   name       = "alb-ingress-controller"
   repository = "https://aws.github.io/eks-charts"
   chart      = "aws-load-balancer-controller"
-  version    = "1.12.0"
+  version    = "1.9.2"
 
   set = [
     {
-      name   = "region"
-      region = var.region
+      name  = "region"
+      value = var.region
 
     },
     {
-      name   = "vpcId"
-      region = var.vpc_id
+      name  = "vpcId"
+      value = var.vpc_id
 
     },
     {
