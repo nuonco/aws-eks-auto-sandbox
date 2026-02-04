@@ -56,6 +56,9 @@ module "eks" {
   access_entries                           = local.access_entries
   enable_cluster_creator_admin_permissions = false
 
+  # IRSA - Enable OIDC provider for IAM Roles for Service Accounts
+  enable_irsa = true
+
   # tags
   tags = local.tags
 }
