@@ -49,7 +49,7 @@ module "eks" {
 
   # access
   endpoint_private_access = true
-  endpoint_public_access  = true
+  endpoint_public_access  = var.cluster_endpoint_public_access
 
   # auth
   authentication_mode                      = "API_AND_CONFIG_MAP"
