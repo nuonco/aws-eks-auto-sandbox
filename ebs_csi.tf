@@ -1,63 +1,28 @@
-locals {
-  ebs_csi = {
-    name      = "ebs-csi-controller"
-    namespace = "ebs-csi-controller"
-  }
-}
+# EKS Auto Mode has built-in EBS CSI support (ebs.csi.eks.amazonaws.com).
+# No addon or IRSA role is needed. We just create a StorageClass that uses
+# the Auto Mode provisioner.
 
-module "ebs_csi_irsa" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = "5.0"
+resource "kubectl_manifest" "ebs_storage_class" {
+  count    = local.enable_ebs_storage_class ? 1 : 0
+  provider = kubectl.main
 
-  role_name             = "ebs-csi-${var.nuon_id}"
-  attach_ebs_csi_policy = true
-
-  oidc_providers = {
-    k8s = {
-      provider_arn               = module.eks.oidc_provider_arn
-      namespace_service_accounts = ["${local.ebs_csi.name}:${local.ebs_csi.name}-sa"]
+  yaml_body = yamlencode({
+    apiVersion = "storage.k8s.io/v1"
+    kind       = "StorageClass"
+    metadata = {
+      name = var.ebs_storage_class.name
+      annotations = var.ebs_storage_class.is_default_class ? {
+        "storageclass.kubernetes.io/is-default-class" = "true"
+      } : {}
     }
-  }
-
-  tags = local.tags
-}
-
-resource "helm_release" "ebs_csi" {
-  namespace        = local.ebs_csi.namespace
-  create_namespace = true
-
-  name       = local.ebs_csi.name
-  repository = "https://kubernetes-sigs.github.io/aws-ebs-csi-driver"
-  chart      = "aws-ebs-csi-driver"
-  version    = "2.16.0"
-
-  provider = helm.main
-
-  values = [
-    yamlencode({
-      node : {
-        tolerateAllTaints : true
-      }
-      controller : {
-        k8sTagClusterId : module.eks.cluster_name
-        serviceAccount : {
-          annotations : {
-            "eks.amazonaws.com/role-arn" : module.ebs_csi_irsa.iam_role_arn
-          }
-        }
-        tolerations : [
-          {
-            key : "CriticalAddonsOnly"
-            value : "true"
-            effect : "NoSchedule"
-          },
-        ]
-      }
-    }),
-  ]
+    provisioner          = var.ebs_storage_class.provisioner
+    volumeBindingMode    = var.ebs_storage_class.volume_binding_mode
+    reclaimPolicy        = var.ebs_storage_class.reclaim_policy
+    allowVolumeExpansion = var.ebs_storage_class.allow_volume_expansion
+    parameters           = var.ebs_storage_class.parameters
+  })
 
   depends_on = [
-    module.ebs_csi_irsa,
     module.eks,
     resource.aws_security_group_rule.runner_cluster_access,
   ]
