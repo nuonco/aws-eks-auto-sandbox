@@ -57,7 +57,7 @@ module "eks" {
   enable_cluster_creator_admin_permissions = false
 
   # IRSA - Enable OIDC provider for IAM Roles for Service Accounts
-  # enable_irsa = true
+  enable_irsa = local.enable_irsa
 
   # addons
   # NOTE: EBS CSI is handled natively by EKS Auto Mode (ebs.csi.eks.amazonaws.com).
