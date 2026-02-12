@@ -1,4 +1,7 @@
 locals {
+  # ebs storage class
+  enable_ebs_storage_class = var.ebs_storage_class.enabled
+
   # nuon dns
   enable_nuon_dns = contains(["1", "true"], var.enable_nuon_dns)
   nuon_dns = {
@@ -251,7 +254,25 @@ variable "helm_driver" {
 # toggle-able components
 #
 
-# Nuon DNS
+# EBS storage class for Auto Mode
+variable "ebs_storage_class" {
+  type = object({
+    enabled              = optional(bool, false)
+    name                 = optional(string, "ebs-auto")
+    is_default_class     = optional(bool, true)
+    provisioner          = optional(string, "ebs.csi.eks.amazonaws.com")
+    volume_binding_mode  = optional(string, "WaitForFirstConsumer")
+    reclaim_policy       = optional(string, "Delete")
+    allow_volume_expansion = optional(bool, true)
+    parameters           = optional(map(string), {
+      type      = "gp3"
+      encrypted = "true"
+    })
+  })
+  default     = {}
+  description = "Configuration for the EBS StorageClass using the EKS Auto Mode provisioner. Set enabled = true to create. All fields have sensible defaults."
+}
+
 variable "enable_nuon_dns" {
   type        = string
   default     = "false"
