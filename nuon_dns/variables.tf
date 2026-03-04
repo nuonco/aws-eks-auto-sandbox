@@ -6,6 +6,11 @@ variable "eks_cluster_name" {
 variable "eks_oidc_provider_arn" {
   type        = string
   description = "The EKS Cluster OIDC Provider ARN"
+
+  validation {
+    condition     = var.eks_oidc_provider_arn != null && trimspace(var.eks_oidc_provider_arn) != ""
+    error_message = "eks_oidc_provider_arn must be set when nuon_dns is enabled."
+  }
 }
 
 variable "internal_root_domain" {

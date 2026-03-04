@@ -4,6 +4,12 @@ Turnkey AWS EKS + Auto Mode sandbox for Nuon app configs.
 
 docs: https://docs.aws.amazon.com/eks/latest/userguide/auto-reference.html
 
+## Notes
+
+- `enable_nuon_dns` depends on IRSA and requires `enable_irsa` to be enabled (`"true"` or `"1"`).
+- If IRSA is disabled while `nuon_dns` or `additional_irsas` are enabled, Terraform now fails fast with a clear
+  validation error.
+
 <!--terraform-docs markdown table . --output-file README.md-->
 <!--npx prettier --write README.md-->
 

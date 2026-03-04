@@ -24,10 +24,10 @@ locals {
   )
 
   roles = {
-    provision_iam_role_name    = split("/", var.provision_iam_role_arn)[length(split("/", var.provision_iam_role_arn)) - 1]
-    deprovision_iam_role_name  = split("/", var.deprovision_iam_role_arn)[length(split("/", var.deprovision_iam_role_arn)) - 1]
-    maintenance_iam_role_name  = split("/", var.maintenance_iam_role_arn)[length(split("/", var.maintenance_iam_role_arn)) - 1]
-    break_glass_iam_role_name  = var.break_glass_iam_role_arn != "" ? split("/", var.break_glass_iam_role_arn)[length(split("/", var.break_glass_iam_role_arn)) - 1] : ""
+    provision_iam_role_name   = split("/", var.provision_iam_role_arn)[length(split("/", var.provision_iam_role_arn)) - 1]
+    deprovision_iam_role_name = split("/", var.deprovision_iam_role_arn)[length(split("/", var.deprovision_iam_role_arn)) - 1]
+    maintenance_iam_role_name = split("/", var.maintenance_iam_role_arn)[length(split("/", var.maintenance_iam_role_arn)) - 1]
+    break_glass_iam_role_name = var.break_glass_iam_role_arn != "" ? split("/", var.break_glass_iam_role_arn)[length(split("/", var.break_glass_iam_role_arn)) - 1] : ""
   }
 }
 
@@ -240,6 +240,11 @@ variable "additional_irsas" {
   }))
   description = "List of additional IRSA accounts to create."
   default     = []
+
+  validation {
+    condition     = length(var.additional_irsas) == 0 || contains(["1", "true"], var.enable_irsa)
+    error_message = "additional_irsas requires enable_irsa to be true (or 1) so an OIDC provider ARN is available."
+  }
 }
 
 #
@@ -298,14 +303,14 @@ variable "helm_driver" {
 # EBS storage class for Auto Mode
 variable "ebs_storage_class" {
   type = object({
-    enabled              = optional(bool, false)
-    name                 = optional(string, "ebs-auto")
-    is_default_class     = optional(bool, true)
-    provisioner          = optional(string, "ebs.csi.eks.amazonaws.com")
-    volume_binding_mode  = optional(string, "WaitForFirstConsumer")
-    reclaim_policy       = optional(string, "Delete")
+    enabled                = optional(bool, false)
+    name                   = optional(string, "ebs-auto")
+    is_default_class       = optional(bool, true)
+    provisioner            = optional(string, "ebs.csi.eks.amazonaws.com")
+    volume_binding_mode    = optional(string, "WaitForFirstConsumer")
+    reclaim_policy         = optional(string, "Delete")
     allow_volume_expansion = optional(bool, true)
-    parameters           = optional(map(string), {
+    parameters = optional(map(string), {
       type      = "gp3"
       encrypted = "true"
     })
@@ -324,6 +329,11 @@ variable "enable_nuon_dns" {
   type        = string
   default     = "false"
   description = "Whether or not the cluster should use a nuon-provided nuon.run domain. Controls the cert-manager-issuer and the route_53_zone."
+
+  validation {
+    condition     = !contains(["1", "true"], var.enable_nuon_dns) || contains(["1", "true"], var.enable_irsa)
+    error_message = "enable_nuon_dns requires enable_irsa to be true (or 1) so IRSA roles can bind to the cluster OIDC provider."
+  }
 }
 
 #
