@@ -180,8 +180,10 @@ variable "ebs_storage_class" {
       encrypted = "true"
     })
   })
-  default     = {}
-  description = "Configuration for the EBS StorageClass using the EKS Auto Mode provisioner. Set enabled = true to create. All fields have sensible defaults."
+  default = {
+    enabled = true
+  }
+  description = "Configuration for the EBS StorageClass using the EKS Auto Mode provisioner. Enabled by default — Auto Mode does not create a StorageClass automatically (see https://docs.aws.amazon.com/eks/latest/userguide/create-storage-class.html)."
 }
 
 
