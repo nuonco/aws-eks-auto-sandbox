@@ -6,21 +6,33 @@ resource "kubectl_manifest" "ebs_storage_class" {
   count    = local.enable_ebs_storage_class ? 1 : 0
   provider = kubectl.main
 
-  yaml_body = yamlencode({
-    apiVersion = "storage.k8s.io/v1"
-    kind       = "StorageClass"
-    metadata = {
-      name = var.ebs_storage_class.name
-      annotations = var.ebs_storage_class.is_default_class ? {
-        "storageclass.kubernetes.io/is-default-class" = "true"
-      } : {}
-    }
-    provisioner          = var.ebs_storage_class.provisioner
-    volumeBindingMode    = var.ebs_storage_class.volume_binding_mode
-    reclaimPolicy        = var.ebs_storage_class.reclaim_policy
-    allowVolumeExpansion = var.ebs_storage_class.allow_volume_expansion
-    parameters           = var.ebs_storage_class.parameters
-  })
+  yaml_body = yamlencode(merge(
+    {
+      apiVersion = "storage.k8s.io/v1"
+      kind       = "StorageClass"
+      metadata = {
+        name = var.ebs_storage_class.name
+        annotations = var.ebs_storage_class.is_default_class ? {
+          "storageclass.kubernetes.io/is-default-class" = "true"
+        } : {}
+      }
+      provisioner          = var.ebs_storage_class.provisioner
+      volumeBindingMode    = var.ebs_storage_class.volume_binding_mode
+      reclaimPolicy        = var.ebs_storage_class.reclaim_policy
+      allowVolumeExpansion = var.ebs_storage_class.allow_volume_expansion
+      parameters           = var.ebs_storage_class.parameters
+    },
+    # Restrict to EKS Auto Mode nodes so PVCs don't bind to non-Auto nodes
+    # in mixed clusters. See: https://docs.aws.amazon.com/eks/latest/userguide/create-storage-class.html
+    var.ebs_storage_class.restrict_to_auto_mode_nodes ? {
+      allowedTopologies = [{
+        matchLabelExpressions = [{
+          key    = "eks.amazonaws.com/compute-type"
+          values = ["auto"]
+        }]
+      }]
+    } : {},
+  ))
 
   depends_on = [
     module.eks,

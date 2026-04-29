@@ -332,6 +332,7 @@ variable "ebs_storage_class" {
       type      = "gp3"
       encrypted = "true"
     })
+    restrict_to_auto_mode_nodes = optional(bool, true)
   })
   default = {
     enabled = true
