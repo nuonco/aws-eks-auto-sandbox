@@ -153,28 +153,35 @@ variable "cluster_name" {
   default     = ""
 }
 
-variable "min_size" {
-  type        = number
-  default     = 2
-  description = "The minimum number of nodes in the managed node group."
+variable "eks_compute_config" {
+  type = object({
+    enabled       = optional(bool, false)
+    node_pools    = optional(list(string))
+    node_role_arn = optional(string)
+  })
+  description = "Configuration block for the EKS Auto Mode compute configuration."
+  default = {
+    enabled    = true
+    node_pools = ["general-purpose"]
+  }
 }
 
-variable "max_size" {
-  type        = number
-  default     = 5
-  description = "The maximum number of nodes in the managed node group."
-}
-
-variable "desired_size" {
-  type        = number
-  default     = 3
-  description = "The desired number of nodes in the managed node group."
-}
-
-variable "default_instance_type" {
-  type        = string
-  default     = "t3a.medium"
-  description = "The EC2 instance type to use for the EKS cluster's default node group."
+variable "ebs_storage_class" {
+  type = object({
+    enabled                = optional(bool, false)
+    name                   = optional(string, "ebs-auto")
+    is_default_class       = optional(bool, true)
+    provisioner            = optional(string, "ebs.csi.eks.amazonaws.com")
+    volume_binding_mode    = optional(string, "WaitForFirstConsumer")
+    reclaim_policy         = optional(string, "Delete")
+    allow_volume_expansion = optional(bool, true)
+    parameters = optional(map(string), {
+      type      = "gp3"
+      encrypted = "true"
+    })
+  })
+  default     = {}
+  description = "Configuration for the EBS StorageClass using the EKS Auto Mode provisioner. Set enabled = true to create. All fields have sensible defaults."
 }
 
 
