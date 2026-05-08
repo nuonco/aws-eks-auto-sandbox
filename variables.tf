@@ -2,9 +2,6 @@ locals {
   # ebs storage class
   enable_ebs_storage_class = var.ebs_storage_class.enabled
 
-  # IRSA
-  enable_irsa = contains(["1", "true"], var.enable_irsa)
-
   # nuon dns
   enable_nuon_dns = contains(["1", "true"], var.enable_nuon_dns)
   nuon_dns = {
@@ -12,6 +9,10 @@ locals {
     internal_root_domain = var.internal_root_domain
     public_root_domain   = var.public_root_domain
   }
+
+  # IRSA — required by the nuon_dns sub-module's IRSA roles, so auto-enable
+  # whenever nuon_dns is on. Can also be forced on independently.
+  enable_irsa = contains(["1", "true"], var.enable_irsa) || local.enable_nuon_dns
 
   # tags for all of the resources
   default_tags = merge(var.tags, {
@@ -343,7 +344,7 @@ variable "ebs_storage_class" {
 variable "enable_irsa" {
   type        = string
   default     = "false"
-  description = "Whether or not to enable the OIDC provider for IAM Roles for Service Accounts (IRSA)."
+  description = "Whether or not to enable the OIDC provider for IAM Roles for Service Accounts (IRSA). Auto-enabled when enable_nuon_dns is true (the nuon_dns sub-module's IRSA roles require it)."
 }
 
 variable "enable_nuon_dns" {

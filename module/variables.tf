@@ -179,6 +179,7 @@ variable "ebs_storage_class" {
       type      = "gp3"
       encrypted = "true"
     })
+    restrict_to_auto_mode_nodes = optional(bool, true)
   })
   default = {
     enabled = true
@@ -208,6 +209,12 @@ variable "enable_nuon_dns" {
   type        = string
   default     = "false"
   description = "Whether or not the cluster should use a nuon-provided nuon.run domain. Controls the cert-manager-issuer and the route_53_zone."
+}
+
+variable "enable_irsa" {
+  type        = string
+  default     = "false"
+  description = "Whether or not to enable the OIDC provider for IAM Roles for Service Accounts (IRSA). Auto-enabled when enable_nuon_dns is true (the nuon_dns sub-module's IRSA roles require it)."
 }
 
 # toggle-able helm charts

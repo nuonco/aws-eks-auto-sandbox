@@ -25,6 +25,7 @@ module "nuon-aws-eks-sandbox" {
 
   # toggleable components
   enable_nuon_dns = var.enable_nuon_dns
+  enable_irsa     = var.enable_irsa
 
   # provided by nuon
   nuon_id              = var.nuon_id
