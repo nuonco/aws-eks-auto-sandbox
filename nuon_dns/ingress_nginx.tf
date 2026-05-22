@@ -15,10 +15,20 @@ resource "helm_release" "ingress_nginx" {
   version    = "4.12.1"
   timeout    = 600
 
-  set = [{
-    name  = "rbac.create"
-    value = "true"
-  }]
+  set = [
+    {
+      name  = "rbac.create"
+      value = "true"
+    },
+    {
+      name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-scheme"
+      value = "internet-facing"
+    },
+    {
+      name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-subnets"
+      value = join("\\,", var.public_subnet_ids)
+    },
+  ]
 
   depends_on = [
     helm_release.alb_ingress_controller
