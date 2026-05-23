@@ -37,3 +37,8 @@ variable "nuon_id" {
   type        = string
   description = "The nuon id for this install. Used for naming purposes."
 }
+
+variable "public_subnet_ids" {
+  type        = list(string)
+  description = "Public subnet IDs for the ingress-nginx LoadBalancer. Passed via annotation so the LB Controller does not rely on subnet tag discovery."
+}

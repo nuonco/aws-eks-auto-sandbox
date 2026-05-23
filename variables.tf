@@ -40,6 +40,24 @@ variable "vpc_id" {
   description = "The ID of the AWS VPC to provision the sandbox in."
 }
 
+variable "private_subnet_ids" {
+  type        = string
+  default     = ""
+  description = "Comma-separated list of existing private subnet IDs used by EKS. If empty, subnets are discovered by tag (visibility=private, network.nuon.co/domain=internal)."
+}
+
+variable "public_subnet_ids" {
+  type        = string
+  default     = ""
+  description = "Comma-separated list of existing public subnet IDs. If empty, subnets are discovered by tag (visibility=public, network.nuon.co/domain=public)."
+}
+
+variable "runner_subnet_id" {
+  type        = string
+  default     = ""
+  description = "Dedicated subnet ID for the Nuon runner ASG (must not overlap with EKS subnets; must have NAT egress). If empty, the subnet is discovered by tag (visibility=private, network.nuon.co/domain=runner)."
+}
+
 variable "maintenance_iam_role_arn" {
   type        = string
   description = "The provision IAM Role ARN"

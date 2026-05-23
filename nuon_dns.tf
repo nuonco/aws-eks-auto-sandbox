@@ -16,6 +16,7 @@ module "nuon_dns" {
   vpc_id                = data.aws_vpc.vpc.id
   nuon_id               = var.nuon_id
   tags                  = var.tags
+  public_subnet_ids     = local.subnets.public.ids
 
   depends_on = [
     module.eks,

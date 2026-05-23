@@ -77,18 +77,37 @@ data "aws_security_groups" "runner" {
 
 
 locals {
+  _private_ids_override = var.private_subnet_ids != "" ? [for s in split(",", var.private_subnet_ids) : trimspace(s)] : []
+  _public_ids_override  = var.public_subnet_ids != "" ? [for s in split(",", var.public_subnet_ids) : trimspace(s)] : []
+  _runner_ids_override  = var.runner_subnet_id != "" ? [trimspace(var.runner_subnet_id)] : []
+
   subnets = {
     private = {
-      ids   = data.aws_subnets.private.ids,
-      cidrs = values(data.aws_subnet.private)[*].cidr_block,
+      ids   = length(local._private_ids_override) > 0 ? local._private_ids_override : data.aws_subnets.private.ids
+      cidrs = length(local._private_ids_override) > 0 ? [for id in local._private_ids_override : data.aws_subnet.private_by_id[id].cidr_block] : values(data.aws_subnet.private)[*].cidr_block
     }
     public = {
-      ids   = data.aws_subnets.public.ids,
-      cidrs = values(data.aws_subnet.public)[*].cidr_block,
+      ids   = length(local._public_ids_override) > 0 ? local._public_ids_override : data.aws_subnets.public.ids
+      cidrs = length(local._public_ids_override) > 0 ? [for id in local._public_ids_override : data.aws_subnet.public_by_id[id].cidr_block] : values(data.aws_subnet.public)[*].cidr_block
     }
     runner = {
-      ids   = data.aws_subnets.runner.ids
-      cidrs = values(data.aws_subnet.runner)[*].cidr_block
+      ids   = length(local._runner_ids_override) > 0 ? local._runner_ids_override : data.aws_subnets.runner.ids
+      cidrs = length(local._runner_ids_override) > 0 ? [for id in local._runner_ids_override : data.aws_subnet.runner_by_id[id].cidr_block] : values(data.aws_subnet.runner)[*].cidr_block
     }
   }
+}
+
+data "aws_subnet" "private_by_id" {
+  for_each = toset(local._private_ids_override)
+  id       = each.key
+}
+
+data "aws_subnet" "public_by_id" {
+  for_each = toset(local._public_ids_override)
+  id       = each.key
+}
+
+data "aws_subnet" "runner_by_id" {
+  for_each = toset(local._runner_ids_override)
+  id       = each.key
 }
