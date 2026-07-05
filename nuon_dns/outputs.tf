@@ -42,13 +42,19 @@ output "cert_manager" {
 
 output "ingress_nginx" {
   value = {
-    enabled = true
-    release = {
-      id        = helm_release.ingress_nginx.id
-      namespace = helm_release.ingress_nginx.metadata.namespace
-      name      = helm_release.ingress_nginx.metadata.name
-      chart     = helm_release.ingress_nginx.metadata.chart
-      revision  = helm_release.ingress_nginx.metadata.revision
+    enabled = var.enable_ingress_nginx
+    release = var.enable_ingress_nginx ? {
+      id        = helm_release.ingress_nginx[0].id
+      namespace = helm_release.ingress_nginx[0].metadata.namespace
+      name      = helm_release.ingress_nginx[0].metadata.name
+      chart     = helm_release.ingress_nginx[0].metadata.chart
+      revision  = helm_release.ingress_nginx[0].metadata.revision
+      } : {
+      id        = ""
+      namespace = ""
+      name      = ""
+      chart     = ""
+      revision  = ""
     }
   }
 }

@@ -3,7 +3,8 @@ locals {
   enable_ebs_storage_class = var.ebs_storage_class.enabled
 
   # nuon dns
-  enable_nuon_dns = contains(["1", "true"], var.enable_nuon_dns)
+  enable_nuon_dns      = contains(["1", "true"], var.enable_nuon_dns)
+  enable_ingress_nginx = contains(["1", "true"], var.enable_ingress_nginx)
   nuon_dns = {
     enabled              = local.enable_nuon_dns
     internal_root_domain = var.internal_root_domain
@@ -345,6 +346,12 @@ variable "enable_irsa" {
   type        = string
   default     = "false"
   description = "Whether or not to enable the OIDC provider for IAM Roles for Service Accounts (IRSA). Auto-enabled when enable_nuon_dns is true (the nuon_dns sub-module's IRSA roles require it)."
+}
+
+variable "enable_ingress_nginx" {
+  type        = string
+  default     = "true"
+  description = "Whether or not to deploy the ingress-nginx helm release within the nuon_dns module."
 }
 
 variable "enable_nuon_dns" {

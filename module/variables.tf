@@ -218,7 +218,11 @@ variable "enable_irsa" {
 }
 
 # toggle-able helm charts
-# TODO
+variable "enable_ingress_nginx" {
+  type        = string
+  default     = "true"
+  description = "Whether or not to deploy the ingress-nginx helm release within the nuon_dns module."
+}
 
 #
 # set by nuon

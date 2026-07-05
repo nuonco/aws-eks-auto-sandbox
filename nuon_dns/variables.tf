@@ -43,6 +43,12 @@ variable "nuon_id" {
   description = "The nuon id for this install. Used for naming purposes."
 }
 
+variable "enable_ingress_nginx" {
+  type        = bool
+  default     = true
+  description = "Whether or not to deploy the ingress-nginx helm release."
+}
+
 variable "public_subnet_ids" {
   type        = list(string)
   description = "Public subnet IDs for the ingress-nginx LoadBalancer. Passed via annotation so the LB Controller does not rely on subnet tag discovery."

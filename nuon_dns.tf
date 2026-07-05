@@ -17,6 +17,7 @@ module "nuon_dns" {
   nuon_id               = var.nuon_id
   tags                  = var.tags
   public_subnet_ids     = local.subnets.public.ids
+  enable_ingress_nginx  = local.enable_ingress_nginx
 
   depends_on = [
     module.eks,

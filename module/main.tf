@@ -24,8 +24,9 @@ module "nuon-aws-eks-sandbox" {
   ebs_storage_class  = var.ebs_storage_class
 
   # toggleable components
-  enable_nuon_dns = var.enable_nuon_dns
-  enable_irsa     = var.enable_irsa
+  enable_nuon_dns      = var.enable_nuon_dns
+  enable_irsa          = var.enable_irsa
+  enable_ingress_nginx = var.enable_ingress_nginx
 
   # provided by nuon
   nuon_id              = var.nuon_id
