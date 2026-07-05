@@ -16,26 +16,38 @@ output "internal_domain" {
 
 output "external_dns" {
   value = {
-    enabled = true
-    release = {
-      id        = helm_release.external_dns.id
-      namespace = helm_release.external_dns.metadata.namespace
-      name      = helm_release.external_dns.metadata.name
-      chart     = helm_release.external_dns.metadata.chart
-      revision  = helm_release.external_dns.metadata.revision
+    enabled = var.enable_external_dns
+    release = var.enable_external_dns ? {
+      id        = helm_release.external_dns[0].id
+      namespace = helm_release.external_dns[0].metadata.namespace
+      name      = helm_release.external_dns[0].metadata.name
+      chart     = helm_release.external_dns[0].metadata.chart
+      revision  = helm_release.external_dns[0].metadata.revision
+      } : {
+      id        = ""
+      namespace = ""
+      name      = ""
+      chart     = ""
+      revision  = ""
     }
   }
 }
 
 output "cert_manager" {
   value = {
-    enabled = true
-    release = {
-      id        = helm_release.cert_manager.id
-      namespace = helm_release.cert_manager.metadata.namespace
-      name      = helm_release.cert_manager.metadata.name
-      chart     = helm_release.cert_manager.metadata.chart
-      revision  = helm_release.cert_manager.metadata.revision
+    enabled = var.enable_cert_manager
+    release = var.enable_cert_manager ? {
+      id        = helm_release.cert_manager[0].id
+      namespace = helm_release.cert_manager[0].metadata.namespace
+      name      = helm_release.cert_manager[0].metadata.name
+      chart     = helm_release.cert_manager[0].metadata.chart
+      revision  = helm_release.cert_manager[0].metadata.revision
+      } : {
+      id        = ""
+      namespace = ""
+      name      = ""
+      chart     = ""
+      revision  = ""
     }
   }
 }
@@ -61,13 +73,19 @@ output "ingress_nginx" {
 
 output "alb_ingress_controller" {
   value = {
-    enabled = true
-    release = {
-      id        = helm_release.alb_ingress_controller.id
-      namespace = helm_release.alb_ingress_controller.metadata.namespace
-      name      = helm_release.alb_ingress_controller.metadata.name
-      chart     = helm_release.alb_ingress_controller.metadata.chart
-      revision  = helm_release.alb_ingress_controller.metadata.revision
+    enabled = var.enable_alb_ingress_controller
+    release = var.enable_alb_ingress_controller ? {
+      id        = helm_release.alb_ingress_controller[0].id
+      namespace = helm_release.alb_ingress_controller[0].metadata.namespace
+      name      = helm_release.alb_ingress_controller[0].metadata.name
+      chart     = helm_release.alb_ingress_controller[0].metadata.chart
+      revision  = helm_release.alb_ingress_controller[0].metadata.revision
+      } : {
+      id        = ""
+      namespace = ""
+      name      = ""
+      chart     = ""
+      revision  = ""
     }
   }
 }
