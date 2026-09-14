@@ -18,8 +18,10 @@ module "nuon-aws-eks-sandbox" {
   kyverno_policy_dir = var.kyverno_policy_dir
 
   # cluster
-  cluster_version = var.cluster_version
-  cluster_name    = var.cluster_name
+  cluster_version                        = var.cluster_version
+  cluster_name                           = var.cluster_name
+  cluster_enabled_log_types              = var.cluster_enabled_log_types
+  cloudwatch_log_group_retention_in_days = var.cloudwatch_log_group_retention_in_days
 
   # toggleable components
   enable_nuon_dns = var.enable_nuon_dns

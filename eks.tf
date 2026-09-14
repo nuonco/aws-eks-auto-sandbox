@@ -57,8 +57,10 @@ module "eks" {
   subnet_ids = local.subnets.private.ids
 
   # access
-  endpoint_private_access = true
-  endpoint_public_access  = var.cluster_endpoint_public_access
+  endpoint_private_access                = true
+  endpoint_public_access                 = var.cluster_endpoint_public_access
+  enabled_log_types                      = var.cluster_enabled_log_types
+  cloudwatch_log_group_retention_in_days = var.cloudwatch_log_group_retention_in_days
 
   # auth
   authentication_mode                      = "API_AND_CONFIG_MAP"
